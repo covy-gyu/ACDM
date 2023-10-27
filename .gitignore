@@ -1,6 +1,6 @@
 build/*
 dist/*
-logs/*
+logs/
 runs/*
 __pycache__/*
 .vscode/*
