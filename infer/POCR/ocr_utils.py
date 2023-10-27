@@ -1,16 +1,9 @@
 import cv2
 import numpy as np
-import easyocr
 
 from conf import *
 from jamo import h2j, j2hcj
 from difflib import SequenceMatcher
-
-import infer.POCR.pocr_conf as OCR_conf
-import infer.POCR.filter_common as filter_common
-import infer.POCR.warp_common as warp_common
-import logs.logmg as logmg
-
 
 def image_read(img_paths):
     imgs = []

@@ -52,4 +52,7 @@ ACDM v1.3
 1027
 --quit_loop ; exit() -> sys exit으로 추가
 --laser 데이터 경로 로그 추가
+--도색표기 수정 중; class, def 파일 분류
+--엑셀 탄약고번호 삭제
+--git 업로드
 
