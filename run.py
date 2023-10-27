@@ -18,7 +18,6 @@ def run():
     th_infer_loop = threading.Thread(target=infer_loop, args=(1.0, ))
     th_infer_loop.daemon = True
     th_infer_loop.start()
-
     quit_input_loop()
 
 

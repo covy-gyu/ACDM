@@ -95,19 +95,22 @@ def extract_text(std, ocr_res):
     std_len = len(std)
     before_diff = float('inf')
     now_diff = 0
-    res = ""
+    ocr_text = ""
 
     for text in ocr_res:
         text = text.strip()
-        res += text + " "
-        res = res.strip()
-        now_diff = abs(std_len - len(res))
+        ocr_text += " " + text 
+        ocr_text = ocr_text.strip()
+        now_diff = abs(std_len - len(ocr_text))
         if now_diff >= before_diff:
             break
         else:
             before_diff = now_diff
         # print(f"Text: {text}")
-        # print(f"ocr: {res}")
+        # print(f"ocr: {ocr_text}")
+        
+    res = ocr_text.split()
+    
     return res
 
 

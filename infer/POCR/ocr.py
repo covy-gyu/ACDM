@@ -130,6 +130,8 @@ def infer_12(bomb, ocr_res):
 
     processed_text = extract_text(std, ocr_res)
     
+    
+    
 
 
 
