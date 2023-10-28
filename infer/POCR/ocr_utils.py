@@ -99,6 +99,10 @@ def extract_text(std, ocr_res):
 
     for text in ocr_res:
         text = text.strip()
+        text = text.strip("'")
+        text = text.strip(".")
+        text = text.strip(",")
+        
         ocr_text += " " + text 
         ocr_text = ocr_text.strip()
         now_diff = abs(std_len - len(ocr_text))
@@ -121,25 +125,37 @@ def text_matching_rate(std, target):
     return match_rate
 
 
-def len_match_rate(std, target):
-    std_len = len(std)
-    target_len = len(target)
-
-    if std_len < target_len:
-        p = target_len
-        c = std_len
-    else:
-        p = std_len
-        c = target_len
-
-    return float(c / p)
+def find_word(std_list, text_list, threshold=0.5):
+    matching_dict = {}
+    
+    for std in std_list:    
+        for text in text_list:
+            rate = text_matching_rate(std, text)
+            if rate >= threshold:
+                matching_dict[text] = rate
+    
+    return matching_dict
 
 
-def find_similar_word(words, target, threshold):
-    for word in words:
-        wmt = text_matching_rate(word, target)
-        if wmt >= threshold:
-            return word
+# def len_match_rate(std, target):
+#     std_len = len(std)
+#     target_len = len(target)
+
+#     if std_len < target_len:
+#         p = target_len
+#         c = std_len
+#     else:
+#         p = std_len
+#         c = target_len
+
+#     return float(c / p)
+
+
+# def find_similar_word(words, target, threshold):
+#     for word in words:
+#         wmt = text_matching_rate(word, target)
+#         if wmt >= threshold:
+#             return word
 
 def chk_include(text, target):
     for s in target:
