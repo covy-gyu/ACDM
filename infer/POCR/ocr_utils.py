@@ -113,7 +113,7 @@ def extract_text(std, ocr_res):
         # print(f"Text: {text}")
         # print(f"ocr: {ocr_text}")
         
-    res = ocr_text.split()
+    res = ocr_text.lower().split()
     
     return res
 
@@ -137,18 +137,18 @@ def find_word(std_list, text_list, threshold=0.5):
     return matching_dict
 
 
-# def len_match_rate(std, target):
-#     std_len = len(std)
-#     target_len = len(target)
+def len_match_rate(std, target):
+    std_len = len(std)
+    target_len = len(target)
 
-#     if std_len < target_len:
-#         p = target_len
-#         c = std_len
-#     else:
-#         p = std_len
-#         c = target_len
+    if std_len < target_len:
+        p = target_len
+        c = std_len
+    else:
+        p = std_len
+        c = target_len
 
-#     return float(c / p)
+    return float(c / p)
 
 
 # def find_similar_word(words, target, threshold):

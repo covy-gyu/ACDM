@@ -122,10 +122,10 @@ def detecting_text(bomb, ocr_obj):
     ocr_res = ocr_obj.run_ocr(closed)
     logmg.i.log("Origin OCR result : %s", ocr_res)
 
-    res = []
+    res = ""
     for text in ocr_res:
-        words = text.split()
-        res.extend(words)
+        res += " " + text
+        res.strip()
 
     return res
 
@@ -141,10 +141,10 @@ def infer_12(bomb, ocr_res):
     std_list = [word for word in std.split()]
 
     matching_dict = find_word(std_list, text_list)
-    max_key = max(matching_dict, key=matching_dict.get)
+    min_key = min(matching_dict, key=matching_dict.get)
 
     # check
-    if max_key in ["고폭탄", "CTG"]:
+    if min_key in ["고폭탄", "CTG"]:
         is_ok = True
     else:
         is_ok = False
@@ -153,7 +153,7 @@ def infer_12(bomb, ocr_res):
         )
 
     logmg.i.log("일치율 dict: %s", matching_dict)
-    logmg.i.log("최고 일치 단어 : %s", max_key)
+    logmg.i.log("최고 일치 단어 : %s", min_key)
     logmg.i.log("결과 : %s", is_ok)
 
     return is_ok
@@ -164,6 +164,7 @@ def infer_13(bomb, ocr_res):
     is_ok = True
 
     std = "조명탄 연막탄 백린연막탄 고폭탄 CTG"
+    logmg.i.log("std : %s", std)
 
     text_list = extract_text(std, ocr_res)
     logmg.i.log("Text_list : %s", text_list)
@@ -187,47 +188,77 @@ def infer_13(bomb, ocr_res):
 
 
 def infer_19(bomb, ocr_res):
-    logmg.i.log("# 탄종 혼합")
+    logmg.i.log("# 도색 표기 불량")
     is_ok = True
 
-    std = "조명탄 연막탄 백린연막탄 고폭탄 CTG"
+    std = "81MM COMP B KM374 고폭탄 CTG"
+    logmg.i.log("std : %s", std)
 
     text_list = extract_text(std, ocr_res)
     logmg.i.log("Text_list : %s", text_list)
     std_list = [word for word in std.split()]
 
     matching_dict = find_word(std_list, text_list)
-    max_key = max(matching_dict, key=matching_dict.get)
+
+    cnt = len(matching_dict)
 
     # check
-    if max_key in ["고폭탄", "CTG"]:
+    if cnt >= 3:
         is_ok = True
     else:
         is_ok = False
-        bomb.defect["body"]["bot"]["res"][6].append(DEFECT_CODE["body"]["bot"]["type"])
+        bomb.defect["body"]["bot"]["res"][6].append(
+            DEFECT_CODE["body"]["bot"]["paint_2"]
+        )
 
     logmg.i.log("일치율 dict: %s", matching_dict)
-    logmg.i.log("최고 일치 단어 : %s", max_key)
+    logmg.i.log("find word count : %s", cnt)
     logmg.i.log("결과 : %s", is_ok)
 
     return is_ok
 
 
-
 def infer_22(bomb, ocr_res):
-    pass
+    logmg.i.log("# 도색 표기 흐림")
+    is_ok = True
+
+    std = "81MM COMP B KM374"
+    logmg.i.log("std : %s", std)
+
+    text_list = extract_text(std, ocr_res)
+    logmg.i.log("Text_list : %s", text_list)
+    text = " ".join(text_list)
+
+    lmr = len_match_rate(std, text)
+
+    # check
+    if lmr >= 0.7:
+        is_ok = True
+    else:
+        is_ok = False
+        bomb.defect["body"]["bot"]["res"][6].append(
+            DEFECT_CODE["body"]["bot"]["paint_1"]
+        )
+
+    logmg.i.log("text : %s", text)
+    logmg.i.log("글자수 일치율: %s", lmr)
+    logmg.i.log("결과 : %s", is_ok)
+
+    return is_ok
 
 
 def do_infer(bomb, ocr_obj):
+    ocr_res = detecting_text(bomb, ocr_obj)
     infer_7(bomb, ocr_obj)
 
-    ocr_res = detecting_text(bomb, ocr_obj)
-    # infer_12_13_19_22(bomb, ocr_obj)
     infer_12(bomb, ocr_res)
     infer_13(bomb, ocr_res)
+
+    infer_14(bomb, ocr_obj)
+
     infer_19(bomb, ocr_res)
     infer_22(bomb, ocr_res)
 
-    infer_14(bomb, ocr_obj)
+    # infer_12_13_19_22(bomb, ocr_obj)
 
     # return True
