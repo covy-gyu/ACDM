@@ -106,7 +106,7 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
+# *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -255,3 +255,7 @@ infer/YOLOS/test3.py
 infer/YOLOS/37/345.png
 ultralytics/assets/zidane.jpg
 ultralytics/assets/bus.jpg
+logs/infering0907.log
+logs/infering0911.log
+logs/infering1027.log
+logs/monitoring.log
