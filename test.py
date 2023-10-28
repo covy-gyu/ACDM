@@ -67,44 +67,66 @@
 # # print(f"각 요소별 일치하는 정확도: {accuracy}%")
 
 
-def find_word(std_list, text_list, threshold=0.5):
-    matching_dict = {}
+# def find_word(std_list, text_list, threshold=0.5):
+#     matching_dict = {}
     
-    for std in std_list:    
-        for text in text_list:
-            rate = text_matching_rate(std, text)
-            if rate >= threshold:
-                matching_dict[text] = rate
+#     for std in std_list:    
+#         for text in text_list:
+#             rate = text_matching_rate(std, text)
+#             if rate >= threshold:
+#                 matching_dict[text] = rate
                 
-    print(matching_dict)
+#     print(matching_dict)
     
-    return matching_dict
+#     return matching_dict
 
 
 from infer.POCR.ocr_utils import *
-def infer_12(ocr_res = ["81MM", "COMP", "B", "CCG"]):
-    std = "연습탄 훈련탄 고폭단 CTG"
+def infer_12(ocr_res = ["81MM 고'탄 TG M374"]):
+    std = "81MM COMP B 고폭탄 M374"
 
     text_list = extract_text(std, ocr_res)
+    # text_list = [word for word in text_list.split()]
+
     print("Processed Text : ", text_list)
     std_list = [word for word in std.split()]
     
-    matching_dict = find_word(std_list, text_list)
+    matching_dict = {}
     
-    print(matching_dict)
-    max_key = max(matching_dict, key=matching_dict.get)
-    print(max_key)
+    if matching_dict: 
+        matching_dict = find_word(std_list, text_list)
     
-    # check
-    if max_key in std_list:
-        pass
+        print(matching_dict)
+        max_key = max(matching_dict, key=matching_dict.get)
+        print(max_key)
     
-    
-        
-        
-    
-    
+        # check
+        if max_key in std_list:
+            pass
 infer_12()
+    
+# import re
+
+# def process_string(s):
+#     # 정규식 패턴을 사용하여 단어를 찾고, 특정 문자를 제거합니다
+#     pattern = r"[A-Za-z0-9가-힣]+"
+#     processed_list = re.findall(pattern, s)
+#     return processed_list
+
+# # 리스트를 정의합니다
+# my_list = ["8 M'M COMP B", "KM374고독탄 로트 트화d9 >라2( 5-032 금야~'"]
+
+# # 각 문자열에 대해 함수를 적용하여 결과를 얻습니다
+# result = [process_string(s) for s in my_list]
+# print(result)
+
+# a = "Aa가12@"
+# b = a.lower()
+# print(b)
+        
+        
+    
+    
             
 # from difflib import SequenceMatcher
 # from hangul_romanize import Transliter
