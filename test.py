@@ -82,7 +82,7 @@
 
 
 from infer.POCR.ocr_utils import *
-def infer_12(ocr_res = ["81MM 고'탄 TG M374"]):
+def infer_12(ocr_res = "81MM 고'탄 TG M374"):
     std = "81MM COMP B 고폭탄 M374"
 
     text_list = extract_text(std, ocr_res)
