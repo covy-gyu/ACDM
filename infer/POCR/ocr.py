@@ -181,7 +181,7 @@ def infer_13(bomb, ocr_res):
     target = "조명탄 연막탄 백린연막탄 고폭탄 CTG"
     logmg.i.log("target : %s", target)
 
-    text_list = extract_text(conf["len"], ocr_res)
+    text_list = extract_text(conf["len"]+2, ocr_res)
     logmg.i.log("Text_list : %s", text_list)
     target_list = [word for word in target.split()]
 
