@@ -84,19 +84,19 @@ infer_14 = {
         ['까지', get_combs(['가', '퍼'], ['지'])],
         ['개이상', get_combs(['개', '캐', '객'], ['이', '비', '미'], ['상', '사', '심', '신'])],
         ['사용', ['시용']],
-        ['five', get_combs(['f', 'F'], ['i', 'I', 'f'], ['v', 'V'], ['e', 'E'])],
+        ['five', get_combs(['f', 'F'], ['i', 'I', 'j', 'J'], ['v', 'V'], ['e', 'E'])],
         ['ive', get_combs(['i', 'I', 'f'], ['v', 'V'], ['e', 'E'])],
         ['use', get_combs(['u', 'U'], ['s', 'S'], ['e', 'E'])],
         ['not', get_combs(['n', 'N'], ['o', 'O'], ['t', 'T'])],
         ['warn', get_combs(['w', 'W'], ['a', 'A'], ['r', 'R'], ['n', 'N'])],
         ['ing', get_combs(['i', 'I'], ['n', 'N'], ['g', 'G'])],
-        ['incre', get_combs(['i', 'I'], ['n', 'N'], ['c', 'C'], ['r', 'R'], ['e', 'e'])],
+        ['incre', get_combs(['i', 'I', '('], ['n', 'N'], ['c', 'C'], ['r', 'R'], ['e', 'e'])],
         ['firing', get_combs(['f', 'F'], ['i', 'I'], ['r', 'R'], ['i', 'I'], ['n', 'N'], ['g', 'G'])],
         ['mortar', get_combs(['m', 'M'], ['o', 'O'], ['r', 'R'], ['t', 'T'], ['a', 'A'], ['r', 'R'])],
         ['more', get_combs(['m', 'M'], ['o', 'O'], ['r', 'R'], ['e', 'E'])],
         ['than', get_combs(['t', 'T'], ['h', 'H'], ['a', 'A'], ['n', 'N'])],
     ],
-    'threshold': 2
+    'threshold': 1
 }
 
  #   std = "81MM COMP B KM374 고폭탄"

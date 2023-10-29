@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 
 from conf import *
+import logs.logmg as logmg
+
 from jamo import h2j, j2hcj
 from difflib import SequenceMatcher
 
@@ -91,8 +93,7 @@ def apply_filter(image, k):
     return filtered
 
 
-def extract_text(std, ocr_res):
-    std_len = len(std)
+def extract_text(std_len, ocr_res):
     before_diff = float('inf')
     now_diff = 0
     ocr_text = ""
@@ -102,17 +103,20 @@ def extract_text(std, ocr_res):
         text = text.strip("'")
         text = text.strip(".")
         text = text.strip(",")
-        
+
+        # logmg.i.log("text : %s",text)
+
         ocr_text += " " + text 
         ocr_text = ocr_text.strip()
         now_diff = abs(std_len - len(ocr_text))
         if now_diff >= before_diff:
+            ocr_text = ocr_text[:-(len(text)+1)]
             break
         else:
             before_diff = now_diff
         # print(f"Text: {text}")
         # print(f"ocr: {ocr_text}")
-        
+    logmg.i.log("text : %s",ocr_text)
     res = ocr_text.lower().split()
     
     return res
