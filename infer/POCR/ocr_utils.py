@@ -138,7 +138,7 @@ def find_word(std_list, text_list, threshold=0.5):
         for text in text_list:
             rate = text_matching_rate(std, text)
             if rate >= threshold:
-                matching_dict[text] = rate
+                matching_dict[std] = rate
     
     return matching_dict
 
