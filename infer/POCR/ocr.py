@@ -133,15 +133,19 @@ def detecting_text(bomb, ocr_obj):
 
     return res
 
+# 영어가 들어있는경우 20
+# 한글인 경우 21
 
 def infer_12(bomb, ocr_res):
+    conf = OCR_conf.infer_12_13
+
     logmg.i.log("# 도색 표기 착오")
     is_ok = True
 
     target = "연습탄 훈련탄 고폭단 CTG"
     logmg.i.log("target : %s", target)
 
-    text_list = extract_text(21, ocr_res)
+    text_list = extract_text(conf["len"], ocr_res)
     logmg.i.log("Text_list : %s", text_list)
     target_list = [word for word in target.split()]
 
@@ -167,13 +171,14 @@ def infer_12(bomb, ocr_res):
 
 
 def infer_13(bomb, ocr_res):
+    conf = OCR_conf.infer_12_13
     logmg.i.log("# 탄종 혼합")
     is_ok = True
 
     target = "조명탄 연막탄 백린연막탄 고폭탄 CTG"
     logmg.i.log("target : %s", target)
 
-    text_list = extract_text(21, ocr_res)
+    text_list = extract_text(conf["len"], ocr_res)
     logmg.i.log("Text_list : %s", text_list)
     target_list = [word for word in target.split()]
 
