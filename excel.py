@@ -36,9 +36,7 @@ class ExcelWriter:
 
         file_path = rep_sl_join(DIR_PATH["done"]["excel"], self.file_name)
         if os.path.exists(file_path):
-            with openpyxl.load_workbook(filename=file_path) as wb:
-                self.workbook = wb.activate
-
+            self.workbook = openpyxl.load_workbook(filename=file_path)
             return
         
         self.workbook = openpyxl.Workbook()
