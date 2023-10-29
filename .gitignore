@@ -1,5 +1,5 @@
 build/*
-dist/*.zip
+dist/*
 runs/*
 __pycache__/*
 .vscode/*
