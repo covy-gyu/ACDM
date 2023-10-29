@@ -23,12 +23,12 @@ def infer_30(bomb):
 
     is_ok = True
     for i, img in enumerate(images):
-        upper_img = img[: img_h // 2]  # Use upper half of image
+        upper_img = img  # Use upper half of image
 
         # Mask pixels have brightness between values of val_thresholds
         cropped_img = upper_img[
-            crop_rect["top"] : crop_rect["bottom"] + 1,
-            crop_rect["left"] : crop_rect["right"] + 1,
+            crop_rect["top"] : crop_rect["bottom"],
+            crop_rect["left"] : crop_rect["right"],
         ]
         value_mask = cv2.inRange(
             cropped_img, val_threshold["lower"], val_threshold["upper"]
@@ -36,7 +36,7 @@ def infer_30(bomb):
 
         # Calculate masked pixel density
         pixel_cnt = cv2.countNonZero(value_mask)
-        total_pixel = upper_img.shape[0] * upper_img.shape[1]
+        total_pixel = value_mask.shape[0] * value_mask.shape[1]
         value_density = pixel_cnt / total_pixel
         contours, _ = cv2.findContours(
             value_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
@@ -53,7 +53,7 @@ def infer_30(bomb):
                         DEFECT_CODE["powder"]["bot"]["exist"]
                     )
                     is_ok = False
-        logmg.i.log("%d 밝기 픽셀 밀집도: %.3f 결과: %s", i, value_density, result)
+        logmg.i.log("%d pixel_cnt: %s 밝기 픽셀 밀집도: %.3f 결과: %s", i, pixel_cnt, value_density, result)
 
     bomb.update_infer_stat("powder", "exist", is_ok)
     return is_ok

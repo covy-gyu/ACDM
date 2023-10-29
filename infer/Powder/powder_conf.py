@@ -6,8 +6,8 @@ infer_30 = {
         'right': 760
     },
     'brightness_threshold': {
-        'lower': 50,
-        'upper': 200
+        'lower': 0,
+        'upper': 50
     },
     'density_threshold': 0.1,
     'pixel_cnt': 7500

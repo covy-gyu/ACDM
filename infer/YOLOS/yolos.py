@@ -713,7 +713,7 @@ def infer_37(bomb, res_CAM1, res_CAM2):
         avg_mean = np.mean(pixel_avg_list)
         max_mean = np.mean(pixel_max_list)
         frq_mean = np.mean(pixel_frq_list)
-        if max_mean < 120 and avg_mean < 55 and frq_mean < 60:
+        if avg_mean < 55 and frq_mean < 55: #max_mean < 120 and 
             logmg.i.log("부식============================================")
             logmg.i.log("max_mean: %s avg_mean: %s frq_mean: %s", max_mean, avg_mean, frq_mean)
             return True
