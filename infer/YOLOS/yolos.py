@@ -722,19 +722,23 @@ def infer_37(bomb, res_CAM1, res_CAM2):
         logmg.i.log(
             "max_mean: %s avg_mean: %s frq_mean: %s", max_mean, avg_mean, frq_mean
         )
-        if max_mean > 120:
-            return False
-        else:
-            if avg_mean < 60 and frq_mean < 50:
-                logmg.i.log("부식============================================")
-                return True
+        # if max_mean > 120:
+        #     return False
+        # else:
+        #     if avg_mean < 60 and frq_mean < 50:
+        #         logmg.i.log("부식============================================")
+        #         return True
+        if frq_mean <= 40:
+            logmg.i.log("부식============================================")
+            return True
+        return False
 
     logmg.i.log("wc:")
     res_wc = is_defect(wc, res_CAM1)
     logmg.i.log("bc:")
     res_bc = is_defect(bc, res_CAM2)
 
-    if res_wc or res_bc == True:
+    if res_wc == True:  # or res_bc
         logmg.i.log("results : wc : %s, bc : %s", res_wc, res_bc)
         is_ok = False
         if res_wc:
