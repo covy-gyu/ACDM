@@ -1,5 +1,6 @@
 from itertools import product
 import numpy as np
+from conf import *
 
 
 def get_combs(*args):
@@ -117,4 +118,9 @@ infer_12_13_19_22 = {
         ['백린', get_combs(['백', '맥', '빅'], ['린', '림', '닌'])],
         ['탄', get_combs(['탄', '단', '판', '본', '한', '된'])]
     ]
+}
+
+infer_12_13 = {
+    'len' : CONFIG['OCR']['LEN']
+
 }

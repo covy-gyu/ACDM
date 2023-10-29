@@ -154,7 +154,7 @@ def infer_6(bomb, res_CAM4):
 
     c2 = get_cls_pos(res_CAM4, "c2")
 
-    if len(c2) > 6:
+    if len(c2) > 0:
         is_ok = False
         add_defects(DEFECT_CODE["head"]["light_corr"], c2, bomb.defect["head"]["res"])
 
@@ -173,9 +173,9 @@ def infer_8(bomb, res_CAM4):
 
     c2p = get_cls_pos(res_CAM4, "c2+")
 
-    if len(c2p) > 0:
-        add_defects(DEFECT_CODE["head"]["heavy_corr"], c2p, bomb.defect["head"]["res"])
+    if len(c2p):
         is_ok = False
+        add_defects(DEFECT_CODE["head"]["heavy_corr"], c2p, bomb.defect["head"]["res"])
 
     bomb.update_infer_stat("head", "heavy_corr", is_ok)
 
