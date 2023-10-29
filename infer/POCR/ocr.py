@@ -127,6 +127,8 @@ def detecting_text(bomb, ocr_obj):
 
     res = ""
     for text in ocr_res:
+        if '4' in text:
+            text = text.replace('4', '4 ')
         res += " " + text
     res = res.strip().split()
     logmg.i.log("OCR res : %s", res)
