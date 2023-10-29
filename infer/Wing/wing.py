@@ -31,6 +31,8 @@ def infer_26(bomb):
 
         line_cnt = lines.size // 2
         leans = []
+        x_at_y_530s = []
+        x_at_y_960s = []
         for line in lines:
             rho, theta = line[0]
             a = np.cos(theta)
@@ -44,9 +46,21 @@ def infer_26(bomb):
             x2 = int(x0 - 1000 * (-b))
             y2 = int(y0 - 1000 * a)
 
+            x_at_y_530 = (rho - 530 * b) / a
+            x_at_y_960 = (rho - 960 * b) / a
+
+            logmg.i.log("x_at_y_530 : %s", x_at_y_530)
+            logmg.i.log("x_at_y_960 : %s", x_at_y_960)
+
+            # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 1)
+            # cv2.imshow("img", img)
+            # cv2.waitKey(0)
             angle_deg = math.degrees(theta)
+
             leans.append(angle_deg)
+            x_at_y_530s.append(x_at_y_530)
+            x_at_y_960s.append(x_at_y_960)
 
         bad_line_cnt = 0
         bad_perc = 0
@@ -58,9 +72,11 @@ def infer_26(bomb):
             is_ok = False
             continue
 
-        for lean in leans:
+        for j, lean in enumerate(leans):
             result = result_type[1]
-            if (177 < lean <= 180 or 0 <= lean <= 0.5) is False:
+            x530 = x_at_y_530s[j]
+            x960 = x_at_y_960s[j]
+            if  not(177 < lean <= 180 or 0 <= lean <= 0.5) and not(620 < x530 < 660 and 620 < x960 < 660):
                 bad_line_cnt += 1
 
         if bad_line_cnt != 0:
@@ -71,6 +87,7 @@ def infer_26(bomb):
             bomb.defect['wing']['res'][i].append(DEFECT_CODE['wing']['bent'])
             is_ok = False
         logmg.i.log("감지 직선 : %d개 %s 기울기 : %r", line_cnt, result, leans)
+        logmg.i.log("bad_perc : %s", bad_perc)
 
     bomb.update_infer_stat('wing', 'bent', is_ok)
     return is_ok
