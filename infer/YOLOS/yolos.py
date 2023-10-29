@@ -725,7 +725,7 @@ def infer_37(bomb, res_CAM1, res_CAM2):
         if max_mean > 120:
             return False
         else:
-            if avg_mean < 55 and frq_mean < 50:
+            if avg_mean < 60 and frq_mean < 50:
                 logmg.i.log("부식============================================")
                 return True
 
