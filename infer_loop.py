@@ -12,6 +12,7 @@ from excel import ExcelWriter
 import logs.logmg as logmg
 import infer.YOLOS.yolos as yolos
 import infer.POCR.pocr as POCR
+import infer.POCR.ocr as OCR
 import infer.Powder.powder as powder
 import infer.Wing.wing as wing
 import infer.Laser.laser as laser
@@ -26,7 +27,7 @@ warnings.filterwarnings(action="ignore")
 def get_infer_list(bomb, ocr_obj, yolo_obj):
     return [
         [yolo_obj.head_infer, [bomb], "신관, 탄체 결함 판별중"],
-        [POCR.do_infer, [bomb, ocr_obj], "도색표기 결함 판별중"],
+        [OCR.do_infer, [bomb, ocr_obj], "도색표기 결함 판별중"],
         [laser.infer17, [bomb], "변위센서 결함 판별중"],
         [wing.do_infer, [bomb], "날개 결함 판별중"],
         [powder.do_infer, [bomb], "추진장약 결함 판별중"],
@@ -99,7 +100,7 @@ def loop(scan_freq=1.0):
             if prev_bomb_lot != bomb.lot:  # New lot
                 is_lot_ok = True
                 logmg.i.log("!!!!!!!%s 로트", bomb.lot.name)
-                ew = ExcelWriter(bomb.lot.name + ".xlsx")
+                ew = ExcelWriter(f"{bomb.lot.name}.xlsx", read_only=False)
 
                 n_prev_bomb = len(ew.workbook.worksheets)
                 if n_prev_bomb != 0:
@@ -132,6 +133,7 @@ def loop(scan_freq=1.0):
             )
             ew.add_bomb(bomb)
             ew.save_excel()
+            ew.close_excel()
             bomb.done()
             prev_bomb_lot = bomb.lot
 
