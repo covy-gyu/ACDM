@@ -100,7 +100,7 @@ def loop(scan_freq=1.0):
             if prev_bomb_lot != bomb.lot:  # New lot
                 is_lot_ok = True
                 logmg.i.log("!!!!!!!%s 로트", bomb.lot.name)
-                ew = ExcelWriter(f"{bomb.lot.name}.xlsx", read_only=False)
+                ew = ExcelWriter(f"{bomb.lot.name}.xlsx")
 
                 n_prev_bomb = len(ew.workbook.worksheets)
                 if n_prev_bomb != 0:
