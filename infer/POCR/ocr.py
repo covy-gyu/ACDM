@@ -127,8 +127,8 @@ def detecting_text(bomb, ocr_obj):
 
     res = ""
     for text in ocr_res:
-        if '4' in text:
-            text = text.replace('4', '4 ')
+        if "4" in text:
+            text = text.replace("4", "4 ")
         res += " " + text
     res = common_err_correction(res, conf["common_ocr_error"])
     res = res.strip().split()
@@ -136,8 +136,10 @@ def detecting_text(bomb, ocr_obj):
 
     return res
 
+
 # 영어가 들어있는경우 20
 # 한글인 경우 21
+
 
 def infer_12(bomb, ocr_res):
     conf = OCR_conf.infer_12_13
@@ -181,7 +183,7 @@ def infer_13(bomb, ocr_res):
     target = "조명탄 연막탄 백린연막탄 고폭탄 CTG"
     logmg.i.log("target : %s", target)
 
-    text_list = extract_text(conf["len"]+2, ocr_res)
+    text_list = extract_text(conf["len"] + 2, ocr_res)
     logmg.i.log("Text_list : %s", text_list)
     target_list = [word for word in target.split()]
 
@@ -221,14 +223,17 @@ def infer_19(bomb, ocr_res):
 
     cnt = len(matching_dict)
 
-    # check
-    if cnt >= 3:
-        is_ok = True
-    else:
-        is_ok = False
-        bomb.defect["body"]["bot"]["res"][6].append(
-            DEFECT_CODE["body"]["bot"]["paint_2"]
-        )
+    if matching_dict:
+        min_key = min(matching_dict, key=matching_dict.get)
+
+        # check
+        if matching_dict[min_key] > 0.5:
+            is_ok = True
+        else:
+            is_ok = False
+            bomb.defect["body"]["bot"]["res"][6].append(
+                DEFECT_CODE["body"]["bot"]["paint_2"]
+            )
 
     logmg.i.log("일치율 dict: %s", matching_dict)
     logmg.i.log("find word count : %s", cnt)
