@@ -307,7 +307,7 @@ def infer_18(bomb, res_CAM3):
             )
             for cnt in contours:
                 _, _, w, _ = cv2.boundingRect(cnt)
-                if w > 500:
+                if 500 < w < 550:
                     w_arr.append(w)
     logmg.i.log("d3 : %s", d3)
     logmg.i.log("w_arr : %s", w_arr)
