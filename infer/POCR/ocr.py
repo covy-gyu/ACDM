@@ -147,7 +147,7 @@ def infer_12(bomb, ocr_res):
     logmg.i.log("# 도색 표기 착오")
     is_ok = True
 
-    target = "연습탄 훈련탄 고폭단 CTG"
+    target = "연습탄 훈련탄 고폭탄 CTG"
     logmg.i.log("target : %s", target)
 
     text_list = extract_text(conf["len"], ocr_res)
