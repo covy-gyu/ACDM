@@ -12,7 +12,7 @@ infer_27 = {
         'bottom_right': (980, 440)
     },
     'template_path': 'data/resource/27_mask.jpg',
-    'infer_threshold': 0.96
+    'infer_threshold': 0.955
 }
 
 infer_28 = {
