@@ -103,14 +103,16 @@ def extract_text(std_len, ocr_res):
         text = text.strip("'")
         text = text.strip(".")
         text = text.strip(",")
+        if text == " ":
+            continue
 
-        # logmg.i.log("text : %s",text)
+        logmg.i.log("text : %s",text)
 
         ocr_text += " " + text 
         ocr_text = ocr_text.strip()
         now_diff = abs(std_len - len(ocr_text))
-        if now_diff >= before_diff:
-            ocr_text = ocr_text[:-(len(text)+1)]
+        text_len = len(text)
+        if now_diff >= before_diff or now_diff == 0:
             break
         else:
             before_diff = now_diff

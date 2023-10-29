@@ -130,6 +130,7 @@ def detecting_text(bomb, ocr_obj):
         if '4' in text:
             text = text.replace('4', '4 ')
         res += " " + text
+    res = common_err_correction(res, conf["common_ocr_error"])
     res = res.strip().split()
     logmg.i.log("OCR res : %s", res)
 
