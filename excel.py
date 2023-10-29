@@ -15,7 +15,6 @@ class ExcelWriter:
         self.field_names = [
             "검사일시",
             "탄순번",
-            # "탄약고번호",
             "DODIC",
             "로트번호",
             "이미지데이터 파일경로",
@@ -25,20 +24,21 @@ class ExcelWriter:
             "구성품",
             "이미지별 결함코드",
             "탄별 결함코드",
+            "검사관"
+        ]
+            # "탄약고번호",
             # "종합 결함코드",
             # "신관",
             # "탄체 결함코드",
             # "추진장약",
             # "날개",
             # "추진약멈치",
-            "검사관",
-        ]
 
         file_path = rep_sl_join(DIR_PATH["done"]["excel"], self.file_name)
         if os.path.exists(file_path):
             self.workbook = openpyxl.load_workbook(filename=file_path)
             return
-
+        
         self.workbook = openpyxl.Workbook()
         self.workbook.remove(self.workbook.worksheets[0])
 
@@ -118,12 +118,12 @@ class ExcelWriter:
             data.append(row)
 
             # Use only when i = 0
-            sensor_data_path = ""
-            sensor_res_path["html"] = ""
-            sensor_res_path["image"] = ""
+            sensor_data_path = ''
+            sensor_res_path["html"] = ''
+            sensor_res_path["image"] = ''
 
             # Use only once
-            defect["CAM" + str(i // 6 + 1)][6] = ""
+            defect["CAM" + str(i // 6 + 1)][6] = ''
 
             # defect_byparts['head'] = ''
             # defect_byparts['body'] = ''
@@ -137,6 +137,8 @@ class ExcelWriter:
         file_path = rep_sl_join(DIR_PATH["done"]["excel"], self.file_name)
         try:
             self.workbook.save(file_path)
+            self.workbook.close()
         except IOError:
             os.makedirs(os.path.dirname(file_path))
             self.workbook.save(file_path)
+            self.workbook.close()
