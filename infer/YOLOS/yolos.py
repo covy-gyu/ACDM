@@ -695,7 +695,7 @@ def infer_37(bomb, res_CAM1, res_CAM2):
                 # logmg.i.log("unique_values: %s counts: %s", unique_values, counts)
                 # logmg.i.log("most_frequent_val: %s", most_frequent_val)
                 # cv2.imshow("mask", mask)
-                # cv2.waitKey(0) 
+                # cv2.waitKey(0)
                 if np.any(mask):
                     maxval = np.max(mask[mask > 0])
                     pixel_max_list.append(maxval)
@@ -707,17 +707,26 @@ def infer_37(bomb, res_CAM1, res_CAM2):
                     )
                     most_frequent_val = unique_values[np.argmax(counts)]
                     pixel_frq_list.append(most_frequent_val)
-                    logmg.i.log("pos: %s maxval: %s avgval: %.2f, most_frequent_val: %s", pos, maxval, avgval, most_frequent_val)
+                    logmg.i.log(
+                        "pos: %s maxval: %s avgval: %.2f, most_frequent_val: %s",
+                        pos,
+                        maxval,
+                        avgval,
+                        most_frequent_val,
+                    )
                     # # logmg.i.log("unique_values: %s", unique_values)
                     # logmg.i.log("most_frequent_val: %s", most_frequent_val)
         avg_mean = np.mean(pixel_avg_list)
         max_mean = np.mean(pixel_max_list)
         frq_mean = np.mean(pixel_frq_list)
-        if avg_mean < 55 and frq_mean < 55: #max_mean < 120 and 
-            logmg.i.log("부식============================================")
-            logmg.i.log("max_mean: %s avg_mean: %s frq_mean: %s", max_mean, avg_mean, frq_mean)
-            return True
-        return False
+        logmg.i.log(
+            "max_mean: %s avg_mean: %s frq_mean: %s", max_mean, avg_mean, frq_mean
+        )
+        if max_mean < 120 and avg_mean < 55:
+            if frq_mean < 50:
+                logmg.i.log("부식============================================")
+                return True
+            return False
 
     logmg.i.log("wc:")
     res_wc = is_defect(wc, res_CAM1)
