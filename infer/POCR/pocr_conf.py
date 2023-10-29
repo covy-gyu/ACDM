@@ -121,6 +121,6 @@ infer_12_13_19_22 = {
 }
 
 infer_12_13 = {
-    'len' : CONFIG['OCR']['LEN']
+    'len' : int(CONFIG['OCR']['LEN'])
 
 }
