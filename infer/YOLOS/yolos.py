@@ -672,6 +672,7 @@ def infer_37(bomb, res_CAM1, res_CAM2):
     def is_defect(target, cam):
         pixel_max_list = []
         pixel_avg_list = []
+        pixel_frq_list = []
 
         if len(target) > 0:
             for pos in target:
@@ -693,24 +694,28 @@ def infer_37(bomb, res_CAM1, res_CAM2):
                 # logmg.i.log("max: %s max_sum: %s", np.max(quantized_mask), max_sum)
                 # logmg.i.log("unique_values: %s counts: %s", unique_values, counts)
                 # logmg.i.log("most_frequent_val: %s", most_frequent_val)
-
+                # cv2.imshow("mask", mask)
+                # cv2.waitKey(0) 
                 if np.any(mask):
                     maxval = np.max(mask[mask > 0])
                     pixel_max_list.append(maxval)
                     avgval = np.mean(mask[mask > 0])
                     pixel_avg_list.append(avgval)
 
-                    # unique_values, counts = np.unique(
-                    #     mask[mask > 0], return_counts=True
-                    # )
-                    # most_frequent_val = unique_values[np.argmax(counts)]
-                    logmg.i.log("pos: %s", pos)
-                    logmg.i.log("maxval: %s", maxval)
-                    # logmg.i.log("avgval: %s", avgval)
+                    unique_values, counts = np.unique(
+                        mask[mask > 0], return_counts=True
+                    )
+                    most_frequent_val = unique_values[np.argmax(counts)]
+                    pixel_frq_list.append(most_frequent_val)
+                    logmg.i.log("pos: %s maxval: %s avgval: %.2f, most_frequent_val: %s", pos, maxval, avgval, most_frequent_val)
                     # # logmg.i.log("unique_values: %s", unique_values)
                     # logmg.i.log("most_frequent_val: %s", most_frequent_val)
-        if np.mean(pixel_max_list) < 130 and np.mean(pixel_avg_list) < 60:
+        avg_mean = np.mean(pixel_avg_list)
+        max_mean = np.mean(pixel_max_list)
+        frq_mean = np.mean(pixel_frq_list)
+        if max_mean < 120 and avg_mean < 55 and frq_mean < 60:
             logmg.i.log("부식============================================")
+            logmg.i.log("max_mean: %s avg_mean: %s frq_mean: %s", max_mean, avg_mean, frq_mean)
             return True
         return False
 
