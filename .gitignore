@@ -258,3 +258,6 @@ ultralytics/assets/bus.jpg
 logs/infering0907.log
 logs/infering0911.log
 logs/monitoring.log
+data/ocr/*.png
+data/ocr/body/*.png
+data/ocr/head/*.png
