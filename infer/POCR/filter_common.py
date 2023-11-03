@@ -21,8 +21,8 @@ def __border_filter_cuda_kernel(src_img, res_img, sz_wnd, mult):
 
             threshold = math.floor(src_img[idx_y][idx_x][0] * mult)
             wnd_max = 0
-            for wnd_idx_x in range(idx_x - sz_wnd, idx_x + sz_wnd + 1):
-                for wnd_idx_y in range(idx_y - sz_wnd, idx_y + sz_wnd + 1):
+            for wnd_idx_x in range(idx_x - sz_wnd, idx_x + sz_wnd):
+                for wnd_idx_y in range(idx_y - sz_wnd, idx_y + sz_wnd):
                     val = src_img[wnd_idx_y][wnd_idx_x][0]
                     if wnd_max < val:
                         wnd_max = val

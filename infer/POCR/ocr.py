@@ -18,7 +18,10 @@ def infer_7(bomb, ocr_obj):
     )
     warped_img = list(map(lambda image: warp_common.warp_img(image, conf), cropped_img))
     cc_img = warp_common.concat_images(warped_img, conf)
-    filtered_img = filter_common.apply_filters(cc_img, 1.5)
+    filtered_img = filter_common.apply_filters(cc_img, 1.4)
+    # cv2.imshow("img", filtered_img)
+    # cv2.waitKey(0)
+    cv2.imwrite(f"data/ocr/head/{bomb.lot.name}_{bomb.num}.png", filtered_img)
 
     # Run OCR
     ocr_result = ocr_obj.run_ocr(filtered_img)
@@ -120,6 +123,7 @@ def detecting_text(bomb, ocr_obj):
     gray = cv2.inRange(filted, 200, 255)
     kernel = np.ones((2, 1), np.uint8)
     closed = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, kernel)
+    cv2.imwrite(f"data/ocr/body/{bomb.lot.name}_{bomb.num}.png", closed)
 
     # 텍스트 추출
     ocr_res = ocr_obj.run_ocr(closed)
@@ -180,7 +184,7 @@ def infer_13(bomb, ocr_res):
     logmg.i.log("# 탄종 혼합")
     is_ok = True
 
-    target = "조명탄 연막탄 백린연막탄 고폭탄 CTG"
+    target = "고폭탄 CTG 조명탄 연막탄 백린연막탄"
     logmg.i.log("target : %s", target)
 
     text_list = extract_text(conf["len"] + 2, ocr_res)

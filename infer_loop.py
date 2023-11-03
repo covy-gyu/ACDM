@@ -141,12 +141,16 @@ def loop(scan_freq=1.0):
             queue_push(
                 infer_time_q, time.time() - st_tm, max_len=NUM_BOMB_AVG_INFER_TIME
             )
+
             # 화면 캡처
             screenshot = ImageGrab.grab()
             # bbox=(x1, y1, x2, y2)
 
+            screenshot_path = "data/tui_result/"
+            if not os.path.exists(screenshot_path):
+                os.makedirs(screenshot_path)
             # 이미지 파일로 저장
-            screenshot.save(f"data/tui_result/{bomb.lot.name}_{bomb.num}.png")
+            screenshot.save(screenshot_path + f"{bomb.lot.name}_{bomb.num}.png")
 
             time.sleep(int(CONFIG["LOOP"]["DELAY"]))
             cls()
