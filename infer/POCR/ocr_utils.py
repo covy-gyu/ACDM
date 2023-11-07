@@ -7,6 +7,7 @@ import logs.logmg as logmg
 from jamo import h2j, j2hcj
 from difflib import SequenceMatcher
 
+
 def image_read(img_paths):
     imgs = []
     for img_path in img_paths:
@@ -94,7 +95,7 @@ def apply_filter(image, k):
 
 
 def extract_text(std_len, ocr_res):
-    before_diff = float('inf')
+    before_diff = float("inf")
     now_diff = 0
     ocr_text = ""
 
@@ -106,9 +107,9 @@ def extract_text(std_len, ocr_res):
         if text == " ":
             continue
 
-        logmg.i.log("text : %s",text)
+        logmg.i.log("text : %s", text)
 
-        ocr_text += " " + text 
+        ocr_text += " " + text
         ocr_text = ocr_text.strip()
         now_diff = abs(std_len - len(ocr_text))
         text_len = len(text)
@@ -118,9 +119,9 @@ def extract_text(std_len, ocr_res):
             before_diff = now_diff
         # print(f"Text: {text}")
         # print(f"ocr: {ocr_text}")
-    logmg.i.log("text : %s",ocr_text)
+    logmg.i.log("text : %s", ocr_text)
     res = ocr_text.lower().split()
-    
+
     return res
 
 
@@ -133,13 +134,13 @@ def text_matching_rate(std, target):
 
 def find_word(std_list, text_list, threshold=0.5):
     matching_dict = {}
-    
-    for std in std_list:    
+
+    for std in std_list:
         for text in text_list:
             rate = text_matching_rate(std, text)
             if rate >= threshold:
                 matching_dict[std] = rate
-    
+
     return matching_dict
 
 
@@ -162,6 +163,7 @@ def len_match_rate(std, target):
 #         wmt = text_matching_rate(word, target)
 #         if wmt >= threshold:
 #             return word
+
 
 def chk_include(text, target):
     for s in target:
