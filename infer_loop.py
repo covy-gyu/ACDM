@@ -27,7 +27,7 @@ warnings.filterwarnings(action="ignore")
 def get_infer_list(bomb, ocr_obj, yolo_obj):
     return [
         [yolo_obj.head_infer, [bomb], "신관, 탄체 결함 판별중"],
-        [OCR.do_infer, [bomb, ocr_obj], "도색표기 결함 판별중"],
+        [OCR.do_infer, [bomb, ocr_obj, yolo_obj], "도색표기 결함 판별중"],
         [laser.infer17, [bomb], "변위센서 결함 판별중"],
         [wing.do_infer, [bomb], "날개 결함 판별중"],
         [powder.do_infer, [bomb], "추진장약 결함 판별중"],

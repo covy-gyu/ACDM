@@ -842,10 +842,22 @@ def get_mask(mask, org_img):
     return mask_img
 
 
+def infer_7(bomb, res_CAM4):
+    logmg.i.log("# 신관 비인가 결합")
+    is_ok = True
+    m526 = get_cls_pos(res_CAM4, "526")
+
+    if len(m526) == 0:
+        is_ok = False
+    logmg.i.log("m526 : %s", m526)
+    return is_ok
+
+
 class YOLOInfer:
     def __init__(self) -> None:
         self.model1 = YOLO("data/model/anchor.pt")
         self.model2 = YOLO("data/model/head.pt")
+        self.model3 = YOLO("data/model/ocr.pt")
 
     def head_infer(self, bomb):
         res_CAM3 = self.detecing(bomb.img_path["CAM3"], self.model2)
@@ -872,6 +884,11 @@ class YOLOInfer:
         infer_24(bomb, res_CAM3)
 
         return True
+
+    def ocr_infer(self, bomb):
+        res_CAM4 = self.detecing(bomb.img_path["CAM4"], self.model3)
+
+        return infer_7(bomb, res_CAM4)
 
     def anchor_infer(self, bomb):
         res_CAM1 = self.detecing(bomb.img_path["CAM1"], self.model1)

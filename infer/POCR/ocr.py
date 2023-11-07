@@ -5,8 +5,12 @@ import infer.POCR.filter_common as filter_common
 import infer.POCR.warp_common as warp_common
 
 
-def infer_7(bomb, ocr_obj):
+def infer_7(bomb, ocr_obj, yolo_obj):
     logmg.i.log("# 비인가된 신관 결합")
+
+    # yolo 결과
+    res = yolo_obj.ocr_infer(bomb)
+
     conf = OCR_conf.infer_7
 
     img_paths = bomb.img_path["CAM4"]
@@ -31,7 +35,7 @@ def infer_7(bomb, ocr_obj):
     ocr_result = common_err_correction(ocr_result, conf["common_ocr_error"])
     # ===================================================================
 
-    res = chk_include(ocr_result, conf["target"])
+    res = res or chk_include(ocr_result, conf["target"])
     result = "정상"
     if res is False:
         result = "비인가된 신관 결합"
@@ -277,8 +281,8 @@ def infer_22(bomb, ocr_res):
     return is_ok
 
 
-def do_infer(bomb, ocr_obj):
-    infer_7(bomb, ocr_obj)
+def do_infer(bomb, ocr_obj, yolo_obj):
+    infer_7(bomb, ocr_obj, yolo_obj)
     infer_14(bomb, ocr_obj)
 
     ocr_res = detecting_text(bomb, ocr_obj)
