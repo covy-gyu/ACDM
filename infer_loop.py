@@ -1,6 +1,10 @@
 import time
 import traceback
+
 from PIL import ImageGrab
+
+import pygetwindow as gw
+import pyautogui
 
 import TUI
 from common import *
@@ -24,6 +28,39 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 warnings.filterwarnings(action="ignore")
 
 
+def capture_program_window(program_name, save_path):
+    # 프로그램 창 찾기
+    program_window = gw.getWindowsWithTitle(program_name)
+
+    if not program_window:
+        print(f"프로그램 '{program_name}'을 찾을 수 없습니다.")
+        return
+
+    program_window = program_window[0]
+
+    # 창을 활성화하고 잠시 대기
+    program_window.activate()
+    time.sleep(1)
+
+    # 현재 화면 캡쳐
+    screenshot = pyautogui.screenshot()
+
+    # 프로그램 창의 좌표와 크기 가져오기
+    left, top, width, height = (
+        program_window.left,
+        program_window.top,
+        program_window.width,
+        program_window.height,
+    )
+
+    # 창 부분만 잘라내기
+    window_capture = screenshot.crop((left, top, left + width, top + height))
+
+    # 이미지 저장
+    window_capture.save(save_path)
+    print(f"프로그램 창을 '{save_path}'에 저장했습니다.")
+
+
 def get_infer_list(bomb, ocr_obj, yolo_obj):
     return [
         [yolo_obj.head_infer, [bomb], "신관, 탄체 결함 판별중"],
@@ -31,6 +68,7 @@ def get_infer_list(bomb, ocr_obj, yolo_obj):
         [laser.infer17, [bomb], "변위센서 결함 판별중"],
         [wing.do_infer, [bomb], "날개 결함 판별중"],
         [powder.do_infer, [bomb], "추진장약 결함 판별중"],
+        [yolo_obj.powder_infer, [bomb], "추진장약 결함 판별중"],
         [yolo_obj.anchor_infer, [bomb], "추진약멈치 결함 판별중"],
     ]
 
@@ -141,16 +179,29 @@ def loop(scan_freq=1.0):
             queue_push(
                 infer_time_q, time.time() - st_tm, max_len=NUM_BOMB_AVG_INFER_TIME
             )
+            time.sleep(2)
 
             # 화면 캡처
+
+            # 프로그램 이름과 저장 경로 설정
+            # program_name = "Visual Studio Code"  # 대상 프로그램의 창 제목
+            # save_path = f"data/tui_result/{bomb.lot.name}"  # 저장할 이미지 경로 및 이름
+            # if not os.path.exists(save_path):
+            #     os.makedirs(save_path)
+            # # 이미지 파일로 저장
+            # save_path = save_path + f"{bomb.num}.png"
+
+            # # 함수 호출
+            # capture_program_window(program_name, save_path)
+
             screenshot = ImageGrab.grab()
             # bbox=(x1, y1, x2, y2)
 
-            screenshot_path = "data/tui_result/"
+            screenshot_path = f"data/tui_result/{bomb.lot.name}"
             if not os.path.exists(screenshot_path):
                 os.makedirs(screenshot_path)
             # 이미지 파일로 저장
-            screenshot.save(screenshot_path + f"{bomb.lot.name}_{bomb.num}.png")
+            screenshot.save(screenshot_path + f"/{bomb.num}.png")
 
             time.sleep(int(CONFIG["LOOP"]["DELAY"]))
             cls()

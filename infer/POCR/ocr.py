@@ -127,10 +127,10 @@ def detecting_text(bomb, ocr_obj):
     gray = cv2.inRange(filted, 200, 255)
     kernel = np.ones((2, 1), np.uint8)
     closed = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, kernel)
-    cv2.imwrite(f"data/ocr/body/{bomb.lot.name}_{bomb.num}.png", closed)
+    cv2.imwrite(f"data/ocr/body/{bomb.lot.name}_{bomb.num}.png", image)
 
     # 텍스트 추출
-    ocr_res = ocr_obj.run_ocr(closed)
+    ocr_res = ocr_obj.run_ocr(image)
     logmg.i.log("Origin OCR result : %s", ocr_res)
 
     res = ""
@@ -169,7 +169,7 @@ def infer_12(bomb, ocr_res):
         # check
         if max_key in ["고폭탄", "CTG"]:
             is_ok = True
-        else:
+        if max_key in ["연습탄", "훈련탄"] and matching_dict[max_key] > 0.5:
             is_ok = False
             bomb.defect["body"]["bot"]["res"][6].append(
                 DEFECT_CODE["body"]["bot"]["paint_3"]
@@ -188,7 +188,7 @@ def infer_13(bomb, ocr_res):
     logmg.i.log("# 탄종 혼합")
     is_ok = True
 
-    target = "고폭탄 CTG 조명탄 연막탄 백린연막탄"
+    target = "고폭탄 CTG 조명탄 연막탄 백린연막탄 훈련탄 연습탄"
     logmg.i.log("target : %s", target)
 
     text_list = extract_text(conf["len"] + 2, ocr_res)
@@ -200,7 +200,7 @@ def infer_13(bomb, ocr_res):
         max_key = max(matching_dict, key=matching_dict.get)
 
         # check
-        if max_key in ["고폭탄", "CTG"]:
+        if max_key in ["고폭탄", "CTG", "훈련탄", "연습탄"]:
             is_ok = True
         else:
             is_ok = False
@@ -216,28 +216,48 @@ def infer_13(bomb, ocr_res):
     return is_ok
 
 
-def infer_19(bomb, ocr_res):
+def infer_19(bomb, ocr_res, res22):
     logmg.i.log("# 도색 표기 불량")
     is_ok = True
 
     std = "81mm comp b km374 고폭탄 ctg"
+    # std = "81mm comp b 고폭탄 km374"
+
     logmg.i.log("std : %s", std)
 
     text_list = extract_text(21, ocr_res)
     logmg.i.log("Text_list : %s", text_list)
     std_list = [word for word in std.split()]
 
-    matching_dict = find_word(std_list, text_list)
+    # text = " ".join(text_list)
+    # lmr = len_match_rate(std, text)
+    # check
+    # if lmr >= 0.85:
+    #     is_ok = True
+    # else:
+    #     is_ok = False
+    #     bomb.defect["body"]["bot"]["res"][6].append(
+    #         DEFECT_CODE["body"]["bot"]["paint_2"]
+    #     )
+    matching_dict = find_word(std_list, text_list)  # , threshold=0.4)
 
     cnt = len(matching_dict)
 
     if matching_dict:
         min_key = min(matching_dict, key=matching_dict.get)
 
+        result_string = "".join(matching_dict)
+        lmr = len_match_rate("81mm comp b 고폭탄 km374", result_string)
+        logmg.i.log("글자수 일치율: %s", lmr)
         # check
-        if matching_dict[min_key] > 0.5:
+        if matching_dict[min_key] >= 0.5 and lmr > 0.58:  # and lmr >= 0.85:
             is_ok = True
+
         else:
+            # if not (res12 and res13):
+            #     if min_key in ["고폭탄", "ctg"]:
+            #         is_ok = True
+            # else:
             is_ok = False
             bomb.defect["body"]["bot"]["res"][6].append(
                 DEFECT_CODE["body"]["bot"]["paint_2"]
@@ -245,8 +265,11 @@ def infer_19(bomb, ocr_res):
 
     logmg.i.log("일치율 dict: %s", matching_dict)
     logmg.i.log("find word count : %s", cnt)
+    # logmg.i.log("text : %s", text)
+    # logmg.i.log("글자수 일치율: %s", lmr)
     logmg.i.log("결과 : %s", is_ok)
-
+    if not (res22):
+        is_ok = True
     bomb.update_infer_stat("body", "paint_2", is_ok)
     return is_ok
 
@@ -282,15 +305,23 @@ def infer_22(bomb, ocr_res):
 
 
 def do_infer(bomb, ocr_obj, yolo_obj):
-    infer_7(bomb, ocr_obj, yolo_obj)
-    infer_14(bomb, ocr_obj)
-
+    res7 = infer_7(bomb, ocr_obj, yolo_obj)
+    res14 = infer_14(bomb, ocr_obj)
     ocr_res = detecting_text(bomb, ocr_obj)
-    infer_12(bomb, ocr_res)
-    infer_13(bomb, ocr_res)
 
-    infer_19(bomb, ocr_res)
-    infer_22(bomb, ocr_res)
+    res12 = infer_12(bomb, ocr_res)
+    res13 = infer_13(bomb, ocr_res)
+    res22 = infer_22(bomb, ocr_res)
+    results = [
+        res7,
+        res14,
+        res12,
+        res13,
+        res22,
+        infer_19(bomb, ocr_res, res22),
+    ]
+
+    return all(results)
 
     # infer_12_13_19_22(bomb, ocr_obj)
 

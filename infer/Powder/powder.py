@@ -53,7 +53,13 @@ def infer_30(bomb):
                         DEFECT_CODE["powder"]["bot"]["exist"]
                     )
                     is_ok = False
-        logmg.i.log("%d pixel_cnt: %s 밝기 픽셀 밀집도: %.3f 결과: %s", i, pixel_cnt, value_density, result)
+        logmg.i.log(
+            "%d pixel_cnt: %s 밝기 픽셀 밀집도: %.3f 결과: %s",
+            i,
+            pixel_cnt,
+            value_density,
+            result,
+        )
 
     bomb.update_infer_stat("powder", "exist", is_ok)
     return is_ok
@@ -254,10 +260,8 @@ def infer_34(bomb):
 
 
 def do_infer(bomb):
-    infer_30(bomb)
-    infer_31(bomb)
-    infer_32(bomb)
-    infer_33(bomb)
-    infer_34(bomb)
+    # infer_30(bomb)
+    results = [infer_31(bomb), infer_32(bomb), infer_33(bomb), infer_34(bomb)]
+    return all(results)
 
     # return True

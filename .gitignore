@@ -253,11 +253,9 @@ infer/YOLOS/test.py
 infer/YOLOS/test2.py
 infer/YOLOS/test3.py
 infer/YOLOS/37/345.png
-ultralytics/assets/zidane.jpg
-ultralytics/assets/bus.jpg
-logs/infering0907.log
-logs/infering0911.log
+ultralytics/assets/*.jpg
 logs/monitoring.log
-data/ocr/*.png
-data/ocr/body/*.png
-data/ocr/head/*.png
+data/ocr/body/*
+data/ocr/head/*
+data/wing/*
+data/ocr/*

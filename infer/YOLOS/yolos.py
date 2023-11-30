@@ -1,5 +1,5 @@
 # from PIL import Image
-import cv2, copy
+import cv2, copy, os
 from ultralytics import YOLO
 
 # from data import logmg
@@ -49,7 +49,7 @@ def infer_2(bomb, res_CAM4):
 
 
 def infer_3(bomb, res_CAM4):
-    logmg.i.log("# 신관 신관 구성품 손상 및 망실")
+    logmg.i.log("# 신관 구성품 손상 및 망실")
     is_ok = True
     b1 = get_cls_pos(res_CAM4, "b1")
     b2 = get_cls_pos(res_CAM4, "b2")
@@ -67,6 +67,14 @@ def infer_3(bomb, res_CAM4):
         # 신관정상결함코드 추가 - 결함리스트의 위치에 맞는 곳에 추가
         add_defects(DEFECT_CODE["head"]["comp"], b5, bomb.defect["head"]["res"])
         is_ok = False
+        save_folder = f"data/result/3/{bomb.lot.name}/b5"
+        if not os.path.exists(save_folder):
+            os.makedirs(save_folder)
+        for pos in b5:
+            row, col = pos
+            mask = res_CAM4["masks"][row][col]
+            cv2.imwrite(f"{save_folder}/{bomb.num}_{row}.png", mask)
+
     logmg.i.log("b1 : %s", b1)
     logmg.i.log("b2 : %s", b2)
     logmg.i.log("b5 : %s", b5)
@@ -289,30 +297,49 @@ def infer_16(bomb, res_CAM3):
 
 
 def infer_18(bomb, res_CAM3):
+    def find_edge_x_idx(start, end, row=0):
+        data = quantized_image[row, start:end]
+
+        if np.any(data == 255):
+            non_max_indices = np.where(data == 255)[0]
+
+            # 255가 여러 개 있는 경우 중앙값의 인덱스 찾기
+            median_index = np.median(non_max_indices)
+            target = start + median_index
+            return target
+        else:
+            return find_edge_x_idx(start, end, row=row + 1)
+
     logmg.i.log("# 링게이지 불합격")
     is_ok = True
-    d3 = get_cls_pos(res_CAM3, "d3")
     cam = bomb.img_path["CAM3"]
-    masks = res_CAM3["masks"]
-    imgs = []
+    diameters = []
+    mean_value = 0
     for i in range(6):
-        imgs.append(cv2.imread(cam[i]))
-    w_arr = []
-    if len(d3) != 0:
-        for pos in d3:
-            row, col = pos
-            mask = masks[row][col]
-            contours, _ = cv2.findContours(
-                mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
-            )
-            for cnt in contours:
-                _, _, w, _ = cv2.boundingRect(cnt)
-                if 500 < w < 550:
-                    w_arr.append(w)
-    logmg.i.log("d3 : %s", d3)
-    logmg.i.log("w_arr : %s", w_arr)
+        image = cv2.imread(cam[i], 0)
+        quantized_image = cv2.convertScaleAbs((image // 15) * 15)
+        # 검은색 픽셀 찾기
+        black_pixels = quantized_image == 0
 
-    if len(w_arr) > 0:
+        # 검은색 픽셀을 흰색으로 변경
+        quantized_image[black_pixels] = 255
+
+        x1 = find_edge_x_idx(150, 640)
+        x2 = find_edge_x_idx(640, 1280)
+        if x1 is not None and x2 is not None:
+            diameters.append(x2 - x1)
+            logmg.i.log("x1 : %s x2 : %s", x1, x2)
+        else:
+            logmg.i.log("No edge found in the specified region.")
+        # cv2.imshow("Image with Colored Contour", quantized_image)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
+    if diameters:
+        mean_value = np.mean(diameters)
+        logmg.i.log("Average for the last 6 iterations: %s", mean_value)
+
+    if 460 <= mean_value <= 560:
         is_ok = True
     else:
         is_ok = False
@@ -324,27 +351,43 @@ def infer_18(bomb, res_CAM3):
     else:
         logmg.i.log("결함")
 
-    # for image_path in cam:
-    #     item = {'filename':str, 'w': 0}
-    #     img = cv2.imread(image_path)
-    #     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #     _, thresh = cv2.threshold(img_gray,20,255,0)
-    #     contours, _ = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-    #     for cnt in contours:
-    #         _, _, w, _ = cv2.boundingRect(cnt)
-    #         if w > 500:
-    #             # img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),1)
-    #             w_arr.append(w)
-    # avg = np.average(w_arr)
-    # result = "링게이지 불합격"
-    # # if 515 < avg < 530:
-    # if 511 < avg < 535:
-    #     result = "정상"
+    return is_ok
+    # d3 = get_cls_pos(res_CAM3, "d3")
+    # cam = bomb.img_path["CAM3"]
+    # masks = res_CAM3["masks"]
+    # imgs = []
+    # for i in range(6):
+    #     imgs.append(cv2.imread(cam[i]))
+    # w_arr = []
+    # if len(d3) != 0:
+    #     for pos in d3:
+    #         row, col = pos
+    #         mask = masks[row][col]
+    #         # mask = cv2.findNonZero(mask)
+    #         cv2.imshow("mask", mask)
+    #         cv2.waitKey(0)
+    #         contours, _ = cv2.findContours(
+    #             mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
+    #         )
+    #         for cnt in contours:
+    #             _, _, w, _ = cv2.boundingRect(cnt)
+    #             if 500 < w < 550:
+    #                 w_arr.append(w)
+    # logmg.i.log("d3 : %s", d3)
+    # logmg.i.log("w_arr : %s", w_arr)
+
+    # if len(w_arr) > 0:
+    #     is_ok = True
     # else:
     #     is_ok = False
-    #     bomb.defect['body']['bot']['res'][6].append(DEFECT_CODE['body']['bot']['gauge'])
-    # logmg.i.log("링게이지 수치: %s 결과: %s", avg, result)
-    # bomb.update_infer_stat('body', 'gauge', is_ok)
+
+    # bomb.update_infer_stat("body", "gauge", is_ok)
+
+    # if is_ok:
+    #     logmg.i.log("정상")
+    # else:
+    #     logmg.i.log("결함")
+
     return is_ok
 
 
@@ -452,11 +495,14 @@ def infer_24(bomb, res_CAM3):
     #         bomb.defect["body"]["bot"]["res"],
     #     )
 
-    if len(d4) > 0:
+    save_folder = f"data/result/24/{bomb.lot.name}/d4"
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
+    if len(d4) > 1:
         for pos in d4:
             row, col = pos
             mask = res_CAM3["masks"][row][col]
-            cv2.imwrite(f"data/d4/{bomb.lot.name}_{bomb.num}.png", mask)
+            cv2.imwrite(f"{save_folder}/{bomb.num}_{row}.png", mask)
 
             # 이미지 픽셀 개수 이상 확인
             # 탄체 중부식추가 - 결함리스트의 위치에 맞는 곳에 추가
@@ -601,15 +647,22 @@ def infer_36(bomb, res_CAM1, res_CAM2):
 
     # 각 멈치 개수가 2개 이하인 경우
     def is_defect(cls, position):
-        if len(cls) <= 2:
-            for i in range(6):
-                cnt = get_counter(cls).get(i, 0)
-                if cnt == 0:
-                    add_defects(
-                        DEFECT_CODE["anchor"]["exist"],
-                        cls,
-                        bomb.defect["anchor"][position]["res"],
-                    )
+        # if len(cls) <= 2:
+        #     for i in range(6):
+        #         cnt = get_counter(cls).get(i, 0)
+        #         if cnt == 0:
+        #             add_defects(
+        #                 DEFECT_CODE["anchor"]["exist"],
+        #                 cls,
+        #                 bomb.defect["anchor"][position]["res"],
+        #             )
+        #     return True
+        if len(cls) == 0:
+            add_defects(
+                DEFECT_CODE["anchor"]["exist"],
+                cls,
+                bomb.defect["anchor"][position]["res"],
+            )
             return True
         return False
 
@@ -853,52 +906,78 @@ def infer_7(bomb, res_CAM4):
     return is_ok
 
 
+def infer_30(bomb, res_CAM2):
+    logmg.i.log("# 추진장약 부분망실")
+    is_ok = True
+    pl = get_cls_pos(res_CAM2, "pl")
+
+    if len(pl) > 0:
+        is_ok = False
+        add_defects(
+            DEFECT_CODE["powder"]["bot"]["exist"],
+            pl,
+            bomb.defect["powder"]["bot"]["res"],
+        )
+    logmg.i.log("pl : %s", pl)
+    bomb.update_infer_stat("powder", "exist", is_ok)
+
+    return is_ok
+
+
 class YOLOInfer:
     def __init__(self) -> None:
         self.model1 = YOLO("data/model/anchor.pt")
         self.model2 = YOLO("data/model/head.pt")
         self.model3 = YOLO("data/model/ocr.pt")
+        self.model4 = YOLO("data/model/powder.pt")
 
     def head_infer(self, bomb):
         res_CAM3 = self.detecing(bomb.img_path["CAM3"], self.model2)
         res_CAM4 = self.detecing(bomb.img_path["CAM4"], self.model2)
 
-        infer_2(bomb, res_CAM4)
-        infer_3(bomb, res_CAM4)
-        infer_4(bomb, res_CAM4)
-        infer_5(bomb, res_CAM4)
+        results = [
+            infer_2(bomb, res_CAM4),
+            infer_3(bomb, res_CAM4),
+            infer_4(bomb, res_CAM4),
+            infer_5(bomb, res_CAM4),
+            infer_6(bomb, res_CAM4),
+            infer_8(bomb, res_CAM4),
+            infer_9(bomb, res_CAM4),
+            infer_10(bomb, res_CAM4),
+            infer_14(bomb, res_CAM4),
+            infer_15(bomb, res_CAM4),
+            infer_16(bomb, res_CAM3),
+            infer_18(bomb, res_CAM3),
+            infer_20(bomb, res_CAM4),
+            infer_21(bomb, res_CAM3),
+            infer_23(bomb, res_CAM3),
+            infer_17(bomb, res_CAM3),
+            infer_24(bomb, res_CAM3),
+        ]
         # infer_6_8(bomb, res_CAM4)
-        infer_6(bomb, res_CAM4)
-        infer_8(bomb, res_CAM4)
-        infer_9(bomb, res_CAM4)
-        infer_10(bomb, res_CAM4)
-        infer_14(bomb, res_CAM4)
-        infer_15(bomb, res_CAM4)
-        infer_16(bomb, res_CAM3)
-        infer_18(bomb, res_CAM3)
-        infer_20(bomb, res_CAM4)
-        infer_21(bomb, res_CAM3)
-        infer_23(bomb, res_CAM3)
         # infer_17_24(bomb, res_CAM3)
-        infer_17(bomb, res_CAM3)
-        infer_24(bomb, res_CAM3)
-
-        return True
+        return all(results)
 
     def ocr_infer(self, bomb):
         res_CAM4 = self.detecing(bomb.img_path["CAM4"], self.model3)
 
         return infer_7(bomb, res_CAM4)
 
+    def powder_infer(self, bomb):
+        res_CAM2 = self.detecing(bomb.img_path["CAM2"], self.model4)
+
+        return infer_30(bomb, res_CAM2)
+
     def anchor_infer(self, bomb):
         res_CAM1 = self.detecing(bomb.img_path["CAM1"], self.model1)
         res_CAM2 = self.detecing(bomb.img_path["CAM2"], self.model1)
 
         # infer_34(bomb, res_CAM1, res_CAM2)
-        infer_36(bomb, res_CAM1, res_CAM2)
-        infer_37(bomb, res_CAM1, res_CAM2)
-
-        return True
+        results = [
+            infer_36(bomb, res_CAM1, res_CAM2),
+            infer_37(bomb, res_CAM1, res_CAM2),
+        ]
+        return all(results)
 
     def detecing(self, cam, model, savemode=False):
         res_info = {"cls": [[], [], [], [], [], []], "masks": [[], [], [], [], [], []]}

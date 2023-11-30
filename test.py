@@ -21,9 +21,6 @@
 # # #     print(f"Similar elements for {key}: {value}")
 
 
-
-
-
 # # # from nltk.translate.bleu_score import sentence_bleu
 
 # # # # 예시 문장
@@ -41,7 +38,7 @@
 # # #     'this is a dog'.split(),
 # # #     'it is dog'.split(),
 # # #     'dog it is'.split(),
-# # #     'a dog, it is'.split() 
+# # #     'a dog, it is'.split()
 # # # ]
 # # # candidate = 'it is dog'.split()
 # # # print('BLEU score -> {}'.format(sentence_bleu(reference, candidate )))
@@ -69,15 +66,15 @@
 
 # # def find_word(std_list, text_list, threshold=0.5):
 # #     matching_dict = {}
-    
-# #     for std in std_list:    
+
+# #     for std in std_list:
 # #         for text in text_list:
 # #             rate = text_matching_rate(std, text)
 # #             if rate >= threshold:
 # #                 matching_dict[text] = rate
-                
+
 # #     print(matching_dict)
-    
+
 # #     return matching_dict
 
 
@@ -90,21 +87,21 @@
 
 #     print("Processed Text : ", text_list)
 #     std_list = [word for word in std.split()]
-    
+
 #     matching_dict = {}
-    
-#     if matching_dict: 
+
+#     if matching_dict:
 #         matching_dict = find_word(std_list, text_list)
-    
+
 #         print(matching_dict)
 #         max_key = max(matching_dict, key=matching_dict.get)
 #         print(max_key)
-    
+
 #         # check
 #         if max_key in std_list:
 #             pass
 # infer_12()
-    
+
 # # import re
 
 # # def process_string(s):
@@ -123,11 +120,8 @@
 # # a = "Aa가12@"
 # # b = a.lower()
 # # print(b)
-        
-        
-    
-    
-            
+
+
 # # from difflib import SequenceMatcher
 # # from hangul_romanize import Transliter
 # # from hangul_romanize.rule import academic
@@ -135,9 +129,9 @@
 # # def greek_text_matching_rate(std, target):
 # #     transliter = Transliter(academic)
 # #     jamo_std = transliter.translit(std)
-    
+
 # #     jamo_target = transliter.translit(target)
-    
+
 # #     print(jamo_std, jamo_target)
 # #     match_rate = SequenceMatcher(None, jamo_std, jamo_target).ratio()
 # #     return match_rate
@@ -170,14 +164,67 @@
 
 # # print(matching_dict)
 
-import re
+# import re
 
-def contains_english(s):
-    return bool(re.search('[a-zA-Z]', s))
+# def contains_english(s):
+#     return bool(re.search('[a-zA-Z]', s))
 
-# 예시 사용
-test_string = "고폭탄"
-if contains_english(test_string):
-    print("영어 알파벳이 포함되어 있습니다.")
-else:
-    print("영어 알파벳이 포함되어 있지 않습니다.")
+# # 예시 사용
+# test_string = "고폭탄"
+# if contains_english(test_string):
+#     print("영어 알파벳이 포함되어 있습니다.")
+# else:
+#     print("영어 알파벳이 포함되어 있지 않습니다.")
+
+
+import pygetwindow as gw
+import pyautogui, time, os
+
+
+def capture_program_window(program_name, save_path):
+    # 프로그램 창 찾기
+    program_window = gw.getWindowsWithTitle(program_name)
+
+    if not program_window:
+        print(f"프로그램 '{program_name}'을 찾을 수 없습니다.")
+        return
+    for win in program_window:
+        title = win.title  # 윈도우 타이틀
+        print(f"Title: {title}")
+
+    program_window = program_window[0]
+
+    # 창을 활성화하고 잠시 대기
+    program_window.minimize()
+    program_window.maximize()
+    time.sleep(1)
+
+    # 현재 화면 캡쳐
+    screenshot = pyautogui.screenshot()
+
+    # 프로그램 창의 좌표와 크기 가져오기
+    left, top, width, height = (
+        program_window.left,
+        program_window.top,
+        program_window.width,
+        program_window.height,
+    )
+
+    # 창 부분만 잘라내기
+    window_capture = screenshot.crop((left, top, left + width, top + height))
+
+    # 이미지 저장
+    window_capture.save(save_path)
+    print(f"프로그램 창을 '{save_path}'에 저장했습니다.")
+
+
+program_name = "Visual Studio Code"  # 대상 프로그램의 창 제목
+save_path = f"data/tui_result/test"  # 저장할 이미지 경로 및 이름
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+# 이미지 파일로 저장
+save_path = save_path + f"/1.png"
+time.sleep(5)
+
+# 함수 호출
+capture_program_window(program_name, save_path)

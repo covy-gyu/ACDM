@@ -84,7 +84,7 @@ def start_index(transformed_images):
             best_cumsum = valid_cumsum
             best_index = index
     # print("가장 작은 누적 값의 이미지 인덱스:", best_index)
-    return best_index + 1
+    return best_index
 
 
 def apply_filter(image, k):
@@ -107,7 +107,7 @@ def extract_text(std_len, ocr_res):
         if text == " ":
             continue
 
-        logmg.i.log("text : %s", text)
+        # logmg.i.log("text : %s", text)
 
         ocr_text += " " + text
         ocr_text = ocr_text.strip()
@@ -119,7 +119,7 @@ def extract_text(std_len, ocr_res):
             before_diff = now_diff
         # print(f"Text: {text}")
         # print(f"ocr: {ocr_text}")
-    logmg.i.log("text : %s", ocr_text)
+    # logmg.i.log("text : %s", ocr_text)
     res = ocr_text.lower().split()
 
     return res
