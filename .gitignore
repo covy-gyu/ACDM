@@ -259,3 +259,4 @@ data/ocr/body/*
 data/ocr/head/*
 data/wing/*
 data/ocr/*
+run.spec
