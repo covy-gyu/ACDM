@@ -71,7 +71,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='ACDM v2.5',
+    name='ACDM v2.5.1',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

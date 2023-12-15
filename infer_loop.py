@@ -144,7 +144,7 @@ def loop(scan_freq=1.0):
                 if n_prev_bomb != 0:
                     for i in range(n_prev_bomb):
                         bomb.lot.bombs.insert(0, None)
-                    bomb.num = n_prev_bomb
+                    bomb.num = n_prev_bomb + 1
 
             # Do inferences
             # ===========================================================
